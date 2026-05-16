@@ -1,0 +1,305 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{background:var(--color-background-primary);font-family:var(--font-sans);max-width:390px;margin:0 auto;padding-bottom:24px}
+.topbar{background:var(--color-background-primary);padding:16px 16px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.brand{font-size:11px;color:var(--color-text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.title{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:14px}
+.daynav{display:flex;gap:6px;overflow-x:auto;padding-bottom:0;scrollbar-width:none}
+.daynav::-webkit-scrollbar{display:none}
+.dn{flex-shrink:0;padding:8px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;margin-bottom:12px}
+.dn.on{background:#111;color:#fff;border-color:#111}
+.body{padding:14px 14px 0}
+.daypanel{display:none}
+.daypanel.show{display:block}
+.dhead{margin-bottom:16px}
+.dtag{display:inline-block;font-size:11px;font-weight:500;letter-spacing:0.5px;padding:3px 10px;border-radius:20px;margin-bottom:6px}
+.t-push{background:#FAECE7;color:#712B13}
+.t-pull{background:#E6F1FB;color:#0C447C}
+.t-legs{background:#EAF3DE;color:#27500A}
+.t-upper{background:#FAEEDA;color:#633806}
+.t-rest{background:#F1EFE8;color:#444441}
+.dname{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.dsub{font-size:13px;color:var(--color-text-secondary)}
+.excard{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:10px;background:var(--color-background-primary)}
+.thumb-row{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer}
+.thumb{width:72px;height:52px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--color-background-secondary)}
+.ex-info{flex:1;min-width:0}
+.ex-name{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.ex-meta{font-size:12px;color:var(--color-text-secondary)}
+.chevron{font-size:18px;color:var(--color-text-secondary);transition:transform 0.2s;flex-shrink:0}
+.chevron.open{transform:rotate(180deg)}
+.exbody{display:none;border-top:0.5px solid var(--color-border-tertiary)}
+.exbody.open{display:block}
+.vwrap{position:relative;width:100%;padding-top:56.25%;background:#000}
+.vwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.vcover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.vcover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.playbtn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;z-index:2;flex-shrink:0}
+.chiprow{display:flex;gap:6px;padding:10px 12px;flex-wrap:wrap}
+.chip{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500}
+.tip{font-size:13px;color:var(--color-text-secondary);padding:0 12px 12px;line-height:1.5}
+.restbox{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:20px;text-align:center;margin-bottom:10px}
+.resticon{font-size:36px;margin-bottom:8px}
+.restname{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.restsub{font-size:13px;color:var(--color-text-secondary)}
+.tiplist{list-style:none;display:flex;flex-direction:column;gap:8px}
+.tiplist li{font-size:13px;color:var(--color-text-primary);padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);line-height:1.45}
+.tiplist li span{color:var(--color-text-secondary)}
+.seclabel{font-size:11px;font-weight:500;color:var(--color-text-secondary);letter-spacing:0.8px;text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.seclabel::after{content:'';flex:1;height:0.5px;background:var(--color-border-tertiary)}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">Coach Ailaan</div>
+    <div class="title">Weekly Workout Plan</div>
+    <div class="daynav">
+      <button class="dn on" onclick="sw(0,this)">Day 1</button>
+      <button class="dn" onclick="sw(1,this)">Day 2</button>
+      <button class="dn" onclick="sw(2,this)">Day 3</button>
+      <button class="dn" onclick="sw(3,this)">Day 4</button>
+      <button class="dn" onclick="sw(4,this)">Day 5</button>
+      <button class="dn" onclick="sw(5,this)">Day 6</button>
+      <button class="dn" onclick="sw(6,this)">Day 7</button>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- DAY 1 -->
+    <div class="daypanel show" id="p0">
+      <div class="dhead">
+        <span class="dtag t-push">Push day</span>
+        <div class="dname">Chest · Shoulders · Triceps</div>
+        <div class="dsub">Machine focus — safe & effective</div>
+      </div>
+      <div id="list0"></div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="daypanel" id="p1">
+      <div class="dhead">
+        <span class="dtag t-pull">Pull day</span>
+        <div class="dname">Back · Biceps</div>
+        <div class="dsub">Build width and thickness</div>
+      </div>
+      <div id="list1"></div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="daypanel" id="p2">
+      <div class="dhead">
+        <span class="dtag t-rest">Active recovery</span>
+        <div class="dname">Rest & Recharge</div>
+        <div class="dsub">Growth happens during recovery</div>
+      </div>
+      <div class="restbox">
+        <div class="resticon">&#128564;</div>
+        <div class="restname">Active recovery day</div>
+        <div class="restsub">Light movement only — no gym</div>
+      </div>
+      <ul class="tiplist">
+        <li><span>Activity:</span> 20–30 min easy walking outdoors</li>
+        <li><span>Mobility:</span> Light full-body stretching — 10 min</li>
+        <li><span>Hydration:</span> Drink 3–4 litres of water</li>
+        <li><span>Nutrition:</span> Hit ~120g protein today</li>
+        <li><span>Sleep:</span> 7–8 hours — this is when you grow</li>
+      </ul>
+    </div>
+
+    <!-- DAY 4 -->
+    <div class="daypanel" id="p3">
+      <div class="dhead">
+        <span class="dtag t-legs">Legs + Core</span>
+        <div class="dname">Quads · Hamstrings · Calves · Core</div>
+        <div class="dsub">Low fatigue smart design</div>
+      </div>
+      <div id="list3"></div>
+      <div class="seclabel">Core</div>
+      <div id="list3b"></div>
+    </div>
+
+    <!-- DAY 5 -->
+    <div class="daypanel" id="p4">
+      <div class="dhead">
+        <span class="dtag t-upper">Upper body</span>
+        <div class="dname">Balance + Pump</div>
+        <div class="dsub">Full upper body — push & pull combined</div>
+      </div>
+      <div id="list4"></div>
+    </div>
+
+    <!-- DAY 6 -->
+    <div class="daypanel" id="p5">
+      <div class="dhead">
+        <span class="dtag t-rest">Rest day</span>
+        <div class="dname">Full Rest</div>
+        <div class="dsub">Rebuild, refuel, recover</div>
+      </div>
+      <div class="restbox">
+        <div class="resticon">&#128164;</div>
+        <div class="restname">Full rest day</div>
+        <div class="restsub">No gym. Eat your calories, sleep well.</div>
+      </div>
+      <ul class="tiplist">
+        <li><span>Eat:</span> Maintenance or slight surplus — don't under-eat</li>
+        <li><span>Recovery:</span> Hot shower + foam rolling if sore</li>
+        <li><span>Prep:</span> Study form videos for next week</li>
+        <li><span>Sleep:</span> Most anabolic thing you can do</li>
+      </ul>
+    </div>
+
+    <!-- DAY 7 -->
+    <div class="daypanel" id="p6">
+      <div class="dhead">
+        <span class="dtag t-rest">Rest day</span>
+        <div class="dname">Reset & Reflect</div>
+        <div class="dsub">Prepare mind and body for next week</div>
+      </div>
+      <div class="restbox">
+        <div class="resticon">&#127807;</div>
+        <div class="restname">Recovery + mindset reset</div>
+        <div class="restsub">Plan your next week today</div>
+      </div>
+      <ul class="tiplist">
+        <li><span>Mind:</span> 10 min meditation or deep breathing</li>
+        <li><span>Plan:</span> Write out next week's workouts and meals</li>
+        <li><span>Log:</span> Record your weight and strength notes</li>
+        <li><span>Hydrate:</span> 3–4 litres today</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var D = {
+  0:[
+    {n:'Incline dumbbell press',m:'Upper chest',v:'dls6eHZGxKU',sets:'4 sets',reps:'8–10 reps',tip:'Keep elbows at 75°. Squeeze chest at top. Full range of motion.'},
+    {n:'Flat machine press',m:'Mid chest',v:'xUm0BiZCWlQ',sets:'3 sets',reps:'10 reps',tip:'Set seat so handles align with lower chest. Push straight out, slow return.'},
+    {n:'Pec deck fly',m:'Chest isolation',v:'Z57CtFmRMxA',sets:'3 sets',reps:'12 reps',tip:'Slight elbow bend. Squeeze pecs at centre — don\'t use arms.'},
+    {n:'Machine shoulder press',m:'Front & side delts',v:'qEwKCR5JCog',sets:'3 sets',reps:'10 reps',tip:'Don\'t lock elbows at top. Keep core braced throughout.'},
+    {n:'Lateral raises',m:'Side delts — shoulder width',v:'3VcKaXpzqRo',sets:'3 sets',reps:'15 reps',tip:'Lead with elbows, not hands. Raise to shoulder height only.'},
+    {n:'Rope pushdown',m:'Triceps',v:'vB5OHsJ3EME',sets:'3 sets',reps:'12 reps',tip:'Elbows pinned at sides. Spread the rope apart at the bottom.'},
+    {n:'Overhead cable extension',m:'Triceps long head',v:'YbX7Wd8jQ-Q',sets:'2 sets',reps:'12 reps',tip:'Face away from cable. Lean forward slightly. Keep elbows in.'}
+  ],
+  1:[
+    {n:'Lat pulldown',m:'Lats — back width',v:'CAwf7n6Luuc',sets:'4 sets',reps:'10 reps',tip:'Lean back slightly. Pull bar to upper chest. Don\'t swing.'},
+    {n:'Seated cable row',m:'Mid back thickness',v:'GZbfZ033f74',sets:'3 sets',reps:'10 reps',tip:'Keep back upright. Row to belly button. Squeeze shoulder blades at end.'},
+    {n:'Chest supported row',m:'Rhomboids & traps',v:'VJSrnY7Ypns',sets:'3 sets',reps:'10 reps',tip:'Chest on pad removes momentum. Focus on driving elbows back.'},
+    {n:'Face pull',m:'Rear delts & rotator cuff',v:'rep-qVOkqgk',sets:'3 sets',reps:'12 reps',tip:'Pull rope to forehead. Externally rotate at the end — great for shoulder health.'},
+    {n:'EZ bar curl',m:'Biceps — easy on wrists',v:'zG2-YzNpOGw',sets:'3 sets',reps:'10 reps',tip:'Keep elbows at sides. Don\'t swing. Slow lowering phase.'},
+    {n:'Hammer curl',m:'Brachialis & forearms',v:'TwD-YGVP4Bk',sets:'2 sets',reps:'12 reps',tip:'Neutral grip (thumbs up). Alternate arms. Control the weight down.'}
+  ],
+  3:[
+    {n:'Leg press',m:'Quads & glutes',v:'IZxyjW7LOLM',sets:'4 sets',reps:'10 reps',tip:'Feet shoulder-width on mid-platform. Don\'t lock knees at top.'},
+    {n:'Smith machine squat',m:'Full legs',v:'2FKNnMJUx4M',sets:'3 sets',reps:'10 reps',tip:'Feet slightly in front of bar. Sit back — chest up throughout.'},
+    {n:'Leg curl',m:'Hamstrings',v:'fcN37TxBE_s',sets:'3 sets',reps:'12 reps',tip:'Hips flat on pad. Curl to full flexion. Slow controlled return.'},
+    {n:'Walking lunges',m:'Quads, glutes & balance',v:'L8fvypPrzzs',sets:'2 sets',reps:'12 each leg',tip:'Keep torso upright. Front knee stays over ankle throughout.'},
+    {n:'Seated calf raise',m:'Soleus — deep calf',v:'YMmgqO8Jo0k',sets:'4 sets',reps:'15–20 reps',tip:'Deep stretch at bottom, full rise at top. Hold 1 sec at top.'}
+  ],
+  '3b':[
+    {n:'Hanging knee raises',m:'Lower abs & hip flexors',v:'hdng3vuIqGI',sets:'3 sets',reps:'12 reps',tip:'Hang from bar. Curl knees to chest slowly. Control the descent.'},
+    {n:'Plank',m:'Full core stability',v:'ASdvN_XEl_c',sets:'3 sets',reps:'45 seconds',tip:'Elbows under shoulders. Squeeze glutes and core. Don\'t let hips drop.'}
+  ],
+  4:[
+    {n:'Incline machine press',m:'Upper chest',v:'xUm0BiZCWlQ',sets:'3 sets',reps:'10 reps',tip:'Controlled reps. Full range. Squeeze chest at top of every rep.'},
+    {n:'Lat pulldown',m:'Lats',v:'CAwf7n6Luuc',sets:'3 sets',reps:'10 reps',tip:'Wide grip. Pull to upper chest. Squeeze shoulder blades together.'},
+    {n:'Dumbbell shoulder press',m:'Full delts',v:'HzIiNhHhhtA',sets:'3 sets',reps:'10 reps',tip:'Dumbbells at ear level. Press up. Don\'t arch lower back.'},
+    {n:'Lateral raises',m:'Side delts',v:'3VcKaXpzqRo',sets:'3 sets',reps:'15 reps',tip:'Light weight. Lead with elbows. Stop at shoulder height.'},
+    {n:'Cable fly',m:'Chest peak & stretch',v:'coKL94BBKUA',sets:'2 sets',reps:'12 reps',tip:'Slight elbow bend. Cross hands at centre for full contraction.'},
+    {n:'Cable curl',m:'Biceps',v:'NFzTWp2qpiE',sets:'2 sets',reps:'12 reps',tip:'Elbows fixed. Curl to full contraction. Slow return.'},
+    {n:'Rope pushdown',m:'Triceps',v:'vB5OHsJ3EME',sets:'2 sets',reps:'12 reps',tip:'Elbows at sides. Spread rope at bottom. Full extension every rep.'}
+  ]
+};
+
+var openId = null;
+
+function buildList(exercises, containerId) {
+  var c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = '';
+  exercises.forEach(function(ex, i) {
+    var id = containerId + '-' + i;
+    var card = document.createElement('div');
+    card.className = 'excard';
+    card.innerHTML =
+      '<div class="thumb-row" onclick="toggle(\''+id+'\')">' +
+        '<img class="thumb" src="https://img.youtube.com/vi/'+ex.v+'/mqdefault.jpg" alt="'+ex.n+'" loading="lazy">' +
+        '<div class="ex-info">' +
+          '<div class="ex-name">'+ex.n+'</div>' +
+          '<div class="ex-meta">'+ex.m+'</div>' +
+        '</div>' +
+        '<i class="ti ti-chevron-down chevron" id="ch-'+id+'"></i>' +
+      '</div>' +
+      '<div class="exbody" id="b-'+id+'">' +
+        '<div class="vwrap">' +
+          '<div class="vcover" id="cov-'+id+'" onclick="play(\''+id+'\',\''+ex.v+'\')">' +
+            '<img src="https://img.youtube.com/vi/'+ex.v+'/mqdefault.jpg" alt="'+ex.n+'">' +
+            '<div class="playbtn"><i class="ti ti-player-play" style="font-size:20px;color:#111" aria-hidden="true"></i></div>' +
+          '</div>' +
+          '<iframe id="fr-'+id+'" allowfullscreen allow="autoplay;encrypted-media" style="display:none;position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>' +
+        '</div>' +
+        '<div class="chiprow">' +
+          '<span class="chip">'+ex.sets+'</span>' +
+          '<span class="chip">'+ex.reps+'</span>' +
+        '</div>' +
+        '<div class="tip">'+ex.tip+'</div>' +
+      '</div>';
+    c.appendChild(card);
+  });
+}
+
+function toggle(id) {
+  var body = document.getElementById('b-'+id);
+  var ch = document.getElementById('ch-'+id);
+  var isOpen = body.classList.contains('open');
+  if (openId && openId !== id) {
+    var ob = document.getElementById('b-'+openId);
+    var och = document.getElementById('ch-'+openId);
+    var ofr = document.getElementById('fr-'+openId);
+    var ocov = document.getElementById('cov-'+openId);
+    if (ob) ob.classList.remove('open');
+    if (och) och.classList.remove('open');
+    if (ofr) { ofr.src=''; ofr.style.display='none'; }
+    if (ocov) ocov.style.display='flex';
+    openId = null;
+  }
+  if (isOpen) {
+    body.classList.remove('open');
+    ch.classList.remove('open');
+    var fr = document.getElementById('fr-'+id);
+    var cov = document.getElementById('cov-'+id);
+    if (fr) { fr.src=''; fr.style.display='none'; }
+    if (cov) cov.style.display='flex';
+    openId = null;
+  } else {
+    body.classList.add('open');
+    ch.classList.add('open');
+    openId = id;
+  }
+}
+
+function play(id, vid) {
+  var cov = document.getElementById('cov-'+id);
+  var fr = document.getElementById('fr-'+id);
+  cov.style.display = 'none';
+  fr.style.display = 'block';
+  fr.src = 'https://www.youtube.com/embed/'+vid+'?autoplay=1&rel=0';
+}
+
+function sw(idx, btn) {
+  document.querySelectorAll('.daypanel').forEach(function(p){p.classList.remove('show')});
+  document.querySelectorAll('.dn').forEach(function(b){b.classList.remove('on')});
+  document.getElementById('p'+idx).classList.add('show');
+  btn.classList.add('on');
+  openId = null;
+}
+
+buildList(D[0],'list0');
+buildList(D[1],'list1');
+buildList(D[3],'list3');
+buildList(D['3b'],'list3b');
+buildList(D[4],'list4');
+</script>
