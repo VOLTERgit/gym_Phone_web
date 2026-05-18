@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Coach Ailaan – Akshay's Workout System</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --fire: #FF4D00;
+    --gold: #FFB800;
+    --dark: #0A0A0A;
+    --card: #121212;
+    --card2: #1A1A1A;
+    --text: #EFEFEF;
+    --muted: #777;
+    --border: rgba(255,77,0,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 110%, rgba(255,77,0,0.22) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 80% 20%, rgba(255,184,0,0.08) 0%, transparent 60%),
+      linear-gradient(180deg, #0A0A0A 0%, #0f0f0f 100%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,77,0,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,77,0,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 70%);
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,77,0,0.12);
+    border: 1px solid rgba(255,77,0,0.3);
+    border-radius: 999px;
+    padding: 6px 18px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--fire);
+    margin-bottom: 2rem;
+    position: relative;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-badge .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--fire);
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.4); }
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 14vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    position: relative;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+
+  .hero h1 span {
+    display: block;
+    background: linear-gradient(135deg, #FF4D00, #FFB800);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 1.2rem;
+    position: relative;
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 3.5rem;
+    position: relative;
+    animation: fadeUp 0.9s 0.35s ease both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--fire);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .stat-divider {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--fire), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+
+  @keyframes scrollPulse {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── PROFILE STRIP ── */
+  .profile-strip {
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+  }
+
+  .profile-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .profile-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--fire), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: #000;
+    flex-shrink: 0;
+  }
+
+  .profile-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+  }
+
+  .profile-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 6px;
+  }
+
+  .tag {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: #aaa;
+  }
+
+  .tag.fire { background: rgba(255,77,0,0.12); border-color: rgba(255,77,0,0.3); color: var(--fire); }
+
+  .profile-metrics {
+    display: flex;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .metric {
+    text-align: center;
+  }
+
+  .metric-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .metric-key {
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── SECTION LAYOUT ── */
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 1.5rem;
+  }
+
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--fire);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--fire);
+    opacity: 0.4;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: 0.03em;
+    line-height: 1;
+    margin-bottom: 3rem;
+  }
+
+  /* ── WEEK SCHEDULE ── */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .day-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+
+  .day-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--fire);
+  }
+
+  .day-card.active { border-color: rgba(255,77,0,0.4); }
+
+  .day-card.rest {
+    opacity: 0.5;
+  }
+
+  .day-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,77,0,0.06), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .day-card:hover::before { opacity: 1; }
+
+  .day-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: rgba(255,255,255,0.08);
+    line-height: 1;
+    position: absolute;
+    top: 8px; right: 12px;
+  }
+
+  .day-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .day-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.05em;
+    margin: 8px 0 4px;
+    color: var(--gold);
+  }
+
+  .day-focus {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── WORKOUT BLOCKS ── */
+  .workout-blocks { display: flex; flex-direction: column; gap: 3rem; }
+
+  .workout-block {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .block-header {
+    padding: 1.8rem 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: linear-gradient(90deg, rgba(255,77,0,0.07), transparent);
+  }
+
+  .block-day-badge {
+    background: var(--fire);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 999px;
+  }
+
+  .block-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.04em;
+  }
+
+  .block-meta {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .block-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  @media (max-width: 700px) {
+    .block-body { grid-template-columns: 1fr; }
+  }
+
+  /* ── EXERCISE LIST ── */
+  .exercise-list {
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .exercise-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .exercise-item:hover {
+    background: rgba(255,77,0,0.07);
+    border-color: rgba(255,77,0,0.2);
+  }
+
+  .ex-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,77,0,0.2), rgba(255,184,0,0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .ex-info { flex: 1; min-width: 0; }
+
+  .ex-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ex-sets {
+    font-size: 0.7rem;
+    color: var(--fire);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+
+  /* ── IMAGE PANEL ── */
+  .image-panel {
+    position: relative;
+    overflow: hidden;
+    border-left: 1px solid rgba(255,255,255,0.06);
+  }
+
+  @media (max-width: 700px) {
+    .image-panel { border-left: none; border-top: 1px solid rgba(255,255,255,0.06); height: 240px; }
+  }
+
+  .image-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+    transition: opacity 0.3s, transform 0.5s;
+    display: block;
+  }
+
+  .workout-block:hover .image-panel img {
+    opacity: 0.9;
+    transform: scale(1.03);
+  }
+
+  .image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(10,10,10,0.5) 0%, transparent 60%);
+  }
+
+  /* ── TIPS SECTION ── */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .tip-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 1.6rem;
+    display: flex;
+    gap: 1rem;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+
+  .tip-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,184,0,0.3);
+  }
+
+  .tip-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .tip-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .tip-text {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── PROGRESSION ── */
+  .progression-banner {
+    background: linear-gradient(135deg, #1a0800, #0f0a00);
+    border: 1px solid rgba(255,184,0,0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .prog-left {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .prog-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--gold), var(--fire));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .prog-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
+  .prog-right {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .prog-pill {
+    background: rgba(255,184,0,0.1);
+    border: 1px solid rgba(255,184,0,0.25);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    text-align: center;
+    min-width: 130px;
+  }
+
+  .prog-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .prog-key {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+
+  /* ── RESULTS ── */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .result-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--fire), var(--gold));
+  }
+
+  .result-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .result-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.9rem;
+    color: var(--fire);
+    line-height: 1;
+  }
+
+  .result-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* ── FOOTER QUOTE ── */
+  .footer-quote {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 5rem 1.5rem;
+    text-align: center;
+  }
+
+  .quote-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 7vw, 5rem);
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    color: rgba(255,255,255,0.1);
+  }
+
+  .quote-text span {
+    color: var(--fire);
+  }
+
+  .quote-coach {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 1.5rem;
+  }
+
+  .quote-coach strong { color: var(--gold); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,77,0,0.2), transparent);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── ACTIVE RECOVERY ── */
+  .recovery-card {
+    background: linear-gradient(135deg, #0d1500, #090d00);
+    border: 1px solid rgba(120,200,0,0.15);
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .rec-icon { font-size: 3.5rem; }
+
+  .rec-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: #a8e060;
+    letter-spacing: 0.04em;
+  }
+
+  .rec-desc {
+    font-size: 0.85rem;
+    color: #6a8a40;
+    margin-top: 6px;
+    line-height: 1.7;
+  }
+
+  /* ── EXERCISE MODAL ── */
+  .exercise-item {
+    cursor: pointer;
+    position: relative;
+  }
+
+  .ex-tap-hint {
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+    opacity: 0.6;
+  }
+
+  .ex-chevron {
+    font-size: 0.75rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: transform 0.3s;
+  }
+
+  .exercise-item.open .ex-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Expand panel inside each exercise */
+  .ex-expand {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease;
+    opacity: 0;
+  }
+
+  .ex-expand.open {
+    max-height: 420px;
+    opacity: 1;
+  }
+
+  .ex-expand-inner {
+    margin-top: 12px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255,77,0,0.15);
+    background: rgba(0,0,0,0.4);
+  }
+
+  .ex-expand-inner img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid rgba(255,77,0,0.12);
+  }
+
+  .ex-expand-info {
+    padding: 14px 16px;
+  }
+
+  .ex-expand-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .ex-expand-desc {
+    font-size: 0.78rem;
+    color: #999;
+    line-height: 1.7;
+  }
+
+  .ex-expand-muscles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .ex-muscle-tag {
+    background: rgba(255,77,0,0.1);
+    border: 1px solid rgba(255,77,0,0.2);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 0.68rem;
+    color: var(--fire);
+    letter-spacing: 0.06em;
+  }
+
+  /* wrap exercise item + expand together */
+  .ex-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── COACH NOTE ── */
+  .coach-note {
+    background: var(--card2);
+    border-left: 4px solid var(--fire);
+    border-radius: 0 16px 16px 0;
+    padding: 1.5rem 2rem;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: #ccc;
+    font-style: italic;
+  }
+
+  .coach-note strong { color: var(--fire); font-style: normal; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,10,10,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    background: linear-gradient(90deg, var(--fire), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .block-body { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">🔥 Coach Ailaan</div>
+  <ul class="nav-links">
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#workouts">Workouts</a></li>
+    <li><a href="#rules">Rules</a></li>
+    <li><a href="#results">Results</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">
+    <span class="dot"></span> Active Program — Akshay
+  </div>
+
+  <h1>
+    COACH<br>
+    <span>AILAAN</span>
+  </h1>
+
+  <p class="hero-sub">Working Professional Gym System &nbsp;•&nbsp; Lean Muscle + Strength</p>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">22</div>
+      <div class="stat-label">Years Old</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">174</div>
+      <div class="stat-label">cm Height</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">67</div>
+      <div class="stat-label">kg Weight</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Days / Week</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- PROFILE STRIP -->
+<div class="profile-strip">
+  <div class="profile-inner">
+    <div class="profile-left">
+      <div class="avatar">AK</div>
+      <div>
+        <div class="profile-name">Akshay</div>
+        <div class="profile-meta">
+          <span class="tag fire">🏥 Hospital Pharmacist</span>
+          <span class="tag">Beginner</span>
+          <span class="tag">Active Lifestyle</span>
+          <span class="tag">Lean Muscle</span>
+        </div>
+      </div>
+    </div>
+    <div class="profile-metrics">
+      <div class="metric">
+        <div class="metric-val">60–75</div>
+        <div class="metric-key">Min / Session</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">3–5kg</div>
+        <div class="metric-key">Expected Gain</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">4mo</div>
+        <div class="metric-key">Timeline</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <div class="section-label">Weekly Structure</div>
+  <div class="section-title">7-Day Plan</div>
+
+  <div class="schedule-grid reveal">
+    <div class="day-card active">
+      <div class="day-num">1</div>
+      <div class="day-label">Day One</div>
+      <div class="day-name">PUSH</div>
+      <div class="day-focus">Chest + Shoulders + Triceps</div>
+    </div>
+    <div class="day-card active">
+      <div class="day-num">2</div>
+      <div class="day-label">Day Two</div>
+      <div class="day-name">PULL</div>
+      <div class="day-focus">Back + Biceps</div>
+    </div>
+    <div class="day-card rest">
+      <div class="day-num">3</div>
+      <div class="day-label">Day Three</div>
+      <div class="day-name">REST</div>
+      <div class="day-focus">Walk + Stretch</div>
+    </div>
+    <div class="day-card active">
+      <div class="day-num">4</div>
+      <div class="day-label">Day Four</div>
+      <div class="day-name">LEGS</div>
+      <div class="day-focus">Legs + Core</div>
+    </div>
+    <div class="day-card active">
+      <div class="day-num">5</div>
+      <div class="day-label">Day Five</div>
+      <div class="day-name">UPPER</div>
+      <div class="day-focus">Pump + Balance</div>
+    </div>
+    <div class="day-card rest">
+      <div class="day-num">6</div>
+      <div class="day-label">Day Six</div>
+      <div class="day-name">REST</div>
+      <div class="day-focus">Full Recovery</div>
+    </div>
+    <div class="day-card rest">
+      <div class="day-num">7</div>
+      <div class="day-label">Day Seven</div>
+      <div class="day-name">REST</div>
+      <div class="day-focus">Full Recovery</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WORKOUTS -->
+<section id="workouts">
+  <div class="section-label">Detailed Program</div>
+  <div class="section-title">Workout Sessions</div>
+
+  <div class="workout-blocks">
+
+    <!-- DAY 1 PUSH -->
+    <div class="workout-block reveal">
+      <div class="block-header">
+        <div>
+          <span class="block-day-badge">Day 1</span>
+          <div class="block-title" style="margin-top:8px;">Push Day – Chest + Shoulders</div>
+        </div>
+        <div class="block-meta">🏋️ Machine Focus &nbsp;|&nbsp; 60–75 min</div>
+      </div>
+      <div class="block-body">
+        <div class="exercise-list">
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">💪</div>
+              <div class="ex-info">
+                <div class="ex-name">Incline Dumbbell Press</div>
+                <div class="ex-sets">4 × 8–10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 1/Incline Dumbbell Press.jpg" alt="Incline Dumbbell Press" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Incline Dumbbell Press</div>
+                  <div class="ex-expand-desc">Set the bench to 30–45°. Hold dumbbells at chest level, palms forward. Press up explosively, squeeze chest at top. Lower slowly (3 sec) for maximum stretch. Keep shoulder blades pinched back throughout.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Upper Chest</span><span class="ex-muscle-tag">Front Deltoid</span><span class="ex-muscle-tag">Triceps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🔩</div>
+              <div class="ex-info">
+                <div class="ex-name">Flat Machine Press</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 1/Flat Machine Press.jpg" alt="Flat Machine Press" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Flat Machine Press</div>
+                  <div class="ex-expand-desc">Adjust seat so handles are at chest height. Grip handles, retract scapula. Push forward until arms almost fully extended. Control the return — don't let the weight stack slam. Machine = consistent resistance curve, safer for beginners.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Mid Chest</span><span class="ex-muscle-tag">Triceps</span><span class="ex-muscle-tag">Anterior Deltoid</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🦅</div>
+              <div class="ex-info">
+                <div class="ex-name">Pec Deck Fly</div>
+                <div class="ex-sets">3 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 1/Pec Deck Fly.jpg" alt="Pec Deck Fly" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Pec Deck Fly</div>
+                  <div class="ex-expand-desc">Sit upright, back flat against pad. Place forearms on pads or grip handles. Bring arms together in a wide arc — imagine hugging a big tree. Pause and squeeze chest at peak contraction. Open wide to full stretch slowly.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Inner Chest</span><span class="ex-muscle-tag">Mid Chest</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">⬆️</div>
+              <div class="ex-info">
+                <div class="ex-name">Machine Shoulder Press</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 1/Machine Shoulder Press.jpg" alt="Machine Shoulder Press" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Machine Shoulder Press</div>
+                  <div class="ex-expand-desc">Set handles at shoulder height. Sit tall, core tight. Press handles overhead without fully locking elbows — keep tension on delts. Lower slowly back to start. Machine path protects rotator cuff better than free weights for beginners.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Front Deltoid</span><span class="ex-muscle-tag">Side Deltoid</span><span class="ex-muscle-tag">Triceps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">↔️</div>
+              <div class="ex-info">
+                <div class="ex-name">Lateral Raises</div>
+                <div class="ex-sets">3 × 15 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 1/Lateral Raises.jpg" alt="Lateral Raises" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Lateral Raises</div>
+                  <div class="ex-expand-desc">Stand with light dumbbells at sides. Lead with elbows (not wrists), raise arms to shoulder height. Think: pouring a jug of water at the top. Don't shrug traps. Slow 3-second lower. Use light weight — form matters more than load here.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Side Deltoid</span><span class="ex-muscle-tag">Supraspinatus</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🪢</div>
+              <div class="ex-info">
+                <div class="ex-name">Rope Pushdown</div>
+                <div class="ex-sets">3 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 1/Rope Pushdown.jpg" alt="Rope Pushdown" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Rope Pushdown</div>
+                  <div class="ex-expand-desc">Attach rope to high cable. Stand close, elbows pinned at sides. Push rope down and flare hands outward at the bottom — this maximizes tricep contraction. Elbows must stay locked at your sides. Don't lean forward.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Triceps (all 3 heads)</span><span class="ex-muscle-tag">Forearms</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🔽</div>
+              <div class="ex-info">
+                <div class="ex-name">Overhead Cable Extension</div>
+                <div class="ex-sets">2 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 1/Overhead Cable Extension.jpg" alt="Overhead Cable Extension" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Overhead Cable Extension</div>
+                  <div class="ex-expand-desc">Face away from cable machine, set cable high. Grip rope overhead, elbows bent beside head. Extend arms forward — fully stretch the long head of the tricep. Keep upper arms still. This is the best tricep long-head exercise for size.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Tricep Long Head</span><span class="ex-muscle-tag">Tricep Lateral Head</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="image-panel">
+          <img src="Day 1/Push Day Workout.jpg" alt="Push Day Workout" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+          <div class="image-overlay"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 2 PULL -->
+    <div class="workout-block reveal">
+      <div class="block-header">
+        <div>
+          <span class="block-day-badge" style="background:#1a6aff;">Day 2</span>
+          <div class="block-title" style="margin-top:8px;">Pull Day – Back + Biceps</div>
+        </div>
+        <div class="block-meta">🏋️ Cable Focus &nbsp;|&nbsp; 60–75 min</div>
+      </div>
+      <div class="block-body">
+        <div class="exercise-list">
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">⬇️</div>
+              <div class="ex-info">
+                <div class="ex-name">Lat Pulldown</div>
+                <div class="ex-sets">4 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 2/Lat Pulldown.jpg" alt="Lat Pulldown" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Lat Pulldown</div>
+                  <div class="ex-expand-desc">Grip bar slightly wider than shoulders, overhand grip. Lean back slightly (15°), pull bar to upper chest. Lead with elbows, not hands. Squeeze lats hard at bottom. Slowly extend arms back up — feel the full lat stretch at the top.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Latissimus Dorsi</span><span class="ex-muscle-tag">Biceps</span><span class="ex-muscle-tag">Rear Deltoid</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🚣</div>
+              <div class="ex-info">
+                <div class="ex-name">Seated Cable Row</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 2/Seated Cable Row.jpg" alt="Seated Cable Row" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Seated Cable Row</div>
+                  <div class="ex-expand-desc">Sit tall with feet on platform, slight knee bend. Pull handle to lower chest/belly button. Drive elbows back as far as possible, squeeze shoulder blades together. Don't round your lower back. Return slowly with full arm extension.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Mid Back</span><span class="ex-muscle-tag">Rhomboids</span><span class="ex-muscle-tag">Biceps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🛡️</div>
+              <div class="ex-info">
+                <div class="ex-name">Chest Supported Row</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 2/Chest Supported Row.jpg" alt="Chest Supported Row" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Chest Supported Row</div>
+                  <div class="ex-expand-desc">Lie chest-down on incline bench. Let arms hang with dumbbells, row elbows back and up. Chest is supported = lower back can't cheat. This isolates the back muscles perfectly. Great for beginners to feel the back working.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Upper Back</span><span class="ex-muscle-tag">Rear Delt</span><span class="ex-muscle-tag">Traps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">😮</div>
+              <div class="ex-info">
+                <div class="ex-name">Face Pull</div>
+                <div class="ex-sets">3 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 2/Face Pull.jpg" alt="Face Pull" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Face Pull</div>
+                  <div class="ex-expand-desc">Set cable at head height with rope. Pull rope toward your face, elbows flaring high and wide. External rotate at end of movement — thumbs point back. This builds rear delts and keeps shoulders healthy. Essential for long-term injury prevention.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Rear Deltoid</span><span class="ex-muscle-tag">External Rotators</span><span class="ex-muscle-tag">Traps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">💪</div>
+              <div class="ex-info">
+                <div class="ex-name">EZ Bar Curl</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 2/EZ Bar Curl.jpg" alt="EZ Bar Curl" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">EZ Bar Curl</div>
+                  <div class="ex-expand-desc">Grip the angled part of EZ bar (reduces wrist stress). Keep elbows at sides. Curl up, squeeze biceps hard at top. Lower fully — full range of motion = more muscle fiber activation. Don't swing body or use momentum.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Biceps</span><span class="ex-muscle-tag">Brachialis</span><span class="ex-muscle-tag">Brachioradialis</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🔨</div>
+              <div class="ex-info">
+                <div class="ex-name">Hammer Curl</div>
+                <div class="ex-sets">2 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 2/Hammer Curl.jpg" alt="Hammer Curl" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Hammer Curl</div>
+                  <div class="ex-expand-desc">Hold dumbbells with neutral grip (palms facing each other). Curl up keeping palms neutral throughout — like swinging a hammer. Targets brachialis which pushes bicep up from underneath making arms look thicker. Alternate arms or both together.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Brachialis</span><span class="ex-muscle-tag">Biceps</span><span class="ex-muscle-tag">Forearms</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="image-panel">
+          <img src="Day 2/Pull Day Workout.jpg" alt="Pull Day Workout" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+          <div class="image-overlay"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 3 RECOVERY -->
+    <div class="recovery-card reveal">
+      <div class="rec-icon">🌿</div>
+      <div>
+        <div class="rec-title">Day 3 — Active Recovery</div>
+        <div class="rec-desc">20–30 min light walking &nbsp;•&nbsp; Light stretching &nbsp;•&nbsp; Let the muscles repair<br>Tumhari job already active hai — overtraining mat karo!</div>
+      </div>
+    </div>
+
+    <!-- DAY 4 LEGS -->
+    <div class="workout-block reveal">
+      <div class="block-header">
+        <div>
+          <span class="block-day-badge" style="background:#9b30ff;">Day 4</span>
+          <div class="block-title" style="margin-top:8px;">Legs + Core – Low Fatigue Smart</div>
+        </div>
+        <div class="block-meta">🦵 Machine Based &nbsp;|&nbsp; 60–75 min</div>
+      </div>
+      <div class="block-body">
+        <div class="exercise-list">
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🏔️</div>
+              <div class="ex-info">
+                <div class="ex-name">Leg Press</div>
+                <div class="ex-sets">4 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 4/Leg Press.jpg" alt="Leg Press" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Leg Press</div>
+                  <div class="ex-expand-desc">Place feet shoulder-width on platform, toes slightly out. Lower sled until knees are at 90°. Drive through heels to push up — don't lock knees at top. Keep lower back pressed to seat. Safer than squats when job fatigue is high.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Quads</span><span class="ex-muscle-tag">Glutes</span><span class="ex-muscle-tag">Hamstrings</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">⬇️</div>
+              <div class="ex-info">
+                <div class="ex-name">Smith Machine Squat</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 4/Smith Machine Squat.jpg" alt="Smith Machine Squat" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Smith Machine Squat</div>
+                  <div class="ex-expand-desc">Bar on upper traps, feet slightly forward of hips. Squat down to parallel or slightly below. Machine provides stability — great for learning squat pattern safely. Drive knees out over toes. Chest up, core braced throughout.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Quads</span><span class="ex-muscle-tag">Glutes</span><span class="ex-muscle-tag">Core</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🔄</div>
+              <div class="ex-info">
+                <div class="ex-name">Leg Curl</div>
+                <div class="ex-sets">3 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 4/Leg Curl.jpg" alt="Leg Curl" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Leg Curl</div>
+                  <div class="ex-expand-desc">Lie face down, pad just above heels. Curl legs up toward glutes — flex your hamstrings hard at top. Don't raise hips off bench. Lower slowly with control. Most beginners are hamstring-weak → this corrects quad-hamstring imbalance.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Hamstrings</span><span class="ex-muscle-tag">Glutes</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🚶</div>
+              <div class="ex-info">
+                <div class="ex-name">Walking Lunges</div>
+                <div class="ex-sets">2 × 12 each leg</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 4/Walking Lunges.jpg" alt="Walking Lunges" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Walking Lunges</div>
+                  <div class="ex-expand-desc">Step forward into lunge, back knee almost touching floor. Push off front foot to step into the next lunge. Keep torso upright, core engaged. Can hold dumbbells for extra load. Excellent for balance and single-leg strength development.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Quads</span><span class="ex-muscle-tag">Glutes</span><span class="ex-muscle-tag">Balance</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🦵</div>
+              <div class="ex-info">
+                <div class="ex-name">Seated Calf Raise</div>
+                <div class="ex-sets">4 × 15–20 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 4/Seated Calf Raise.jpg" alt="Seated Calf Raise" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Seated Calf Raise</div>
+                  <div class="ex-expand-desc">Sit with pad over lower thighs. Lower heels for a full stretch, then raise up as high as possible on toes. Pause at top and squeeze. Seated position targets soleus (deeper calf) more than standing. High reps work best for calves.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Soleus</span><span class="ex-muscle-tag">Gastrocnemius</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)" style="border-color:rgba(255,77,0,0.2); background:rgba(255,77,0,0.04);">
+              <div class="ex-icon">🔥</div>
+              <div class="ex-info">
+                <div class="ex-name" style="color:var(--fire);">CORE: Hanging Knee Raises</div>
+                <div class="ex-sets">3 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 4/Hanging Knee Raises.jpg" alt="Hanging Knee Raises" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Hanging Knee Raises</div>
+                  <div class="ex-expand-desc">Hang from pull-up bar. Bring both knees up toward chest, curling lower back slightly. Don't swing. Lower with control. If too hard, do lying knee raises first. This hits lower abs which are hardest to develop.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Lower Abs</span><span class="ex-muscle-tag">Hip Flexors</span><span class="ex-muscle-tag">Core</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)" style="border-color:rgba(255,77,0,0.2); background:rgba(255,77,0,0.04);">
+              <div class="ex-icon">🧱</div>
+              <div class="ex-info">
+                <div class="ex-name" style="color:var(--fire);">CORE: Plank</div>
+                <div class="ex-sets">3 × 45 seconds</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 4/Plank.jpg" alt="Plank" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Plank</div>
+                  <div class="ex-expand-desc">Forearms on floor, body in straight line from head to heels. Squeeze glutes, brace abs like you're about to be punched. Don't let hips sag or pike up. Breathe steadily. 45 seconds with perfect form beats 2 minutes with poor form.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Core</span><span class="ex-muscle-tag">Glutes</span><span class="ex-muscle-tag">Shoulders</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="image-panel">
+          <img src="Day 4/Legs Day Workout.jpg" alt="Legs Day Workout" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+          <div class="image-overlay"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 5 UPPER BODY -->
+    <div class="workout-block reveal">
+      <div class="block-header">
+        <div>
+          <span class="block-day-badge" style="background:#e8a000;">Day 5</span>
+          <div class="block-title" style="margin-top:8px;">Upper Body – Pump + Balance</div>
+        </div>
+        <div class="block-meta">💥 Full Upper &nbsp;|&nbsp; 60–75 min</div>
+      </div>
+      <div class="block-body">
+        <div class="exercise-list">
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">📐</div>
+              <div class="ex-info">
+                <div class="ex-name">Incline Machine Press</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 5/Incline Machine Press.jpg" alt="Incline Machine Press" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Incline Machine Press</div>
+                  <div class="ex-expand-desc">Set machine to incline angle. Sit back, push handles up and slightly forward. Great for Day 5 as it's lighter CNS load than free weights. Focus on upper chest squeeze at top. Perfect form finisher after a full week of training.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Upper Chest</span><span class="ex-muscle-tag">Shoulders</span><span class="ex-muscle-tag">Triceps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">⬇️</div>
+              <div class="ex-info">
+                <div class="ex-name">Lat Pulldown</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 5/Lat Pulldown.jpg" alt="Lat Pulldown" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Lat Pulldown</div>
+                  <div class="ex-expand-desc">Same technique as Day 2 but this is your pump/balance day — slightly lighter weight, focus on feel and contraction. 3 sets only. Lean back 15°, pull to upper chest, elbows leading down and back.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Latissimus Dorsi</span><span class="ex-muscle-tag">Biceps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">⬆️</div>
+              <div class="ex-info">
+                <div class="ex-name">Dumbbell Shoulder Press</div>
+                <div class="ex-sets">3 × 10 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 5/Dumbbell Shoulder Press.jpg" alt="Dumbbell Shoulder Press" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Dumbbell Shoulder Press</div>
+                  <div class="ex-expand-desc">Sit on bench with back support. Hold dumbbells at shoulder height, palms forward. Press up until arms nearly extended, bring dumbbells slightly together at top. Lower to ear level — full range. More natural arc than machine, good for balance day.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">All 3 Deltoid Heads</span><span class="ex-muscle-tag">Triceps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">↔️</div>
+              <div class="ex-info">
+                <div class="ex-name">Lateral Raises</div>
+                <div class="ex-sets">3 × 15 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 5/Lateral Raises.jpg" alt="Lateral Raises" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Lateral Raises</div>
+                  <div class="ex-expand-desc">Lead with elbows, raise to shoulder height. On Day 5 go slightly lighter than Day 1 — this is a pump day. Feel the burn in side delts. Perfect technique → more muscle activation than heavier sloppy weight.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Side Deltoid</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🦋</div>
+              <div class="ex-info">
+                <div class="ex-name">Cable Fly</div>
+                <div class="ex-sets">2 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 5/Cable Fly.jpg" alt="Cable Fly" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Cable Fly</div>
+                  <div class="ex-expand-desc">Set cables at chest height. Step forward, arms wide. Bring hands together in front of chest in a wide arc — keep slight elbow bend throughout. Cables maintain constant tension unlike dumbbells. Great chest isolation finisher for the week.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Chest</span><span class="ex-muscle-tag">Front Deltoid</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">💪</div>
+              <div class="ex-info">
+                <div class="ex-name">Cable Curl</div>
+                <div class="ex-sets">2 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 5/Cable Curl.jpg" alt="Cable Curl" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Cable Curl</div>
+                  <div class="ex-expand-desc">Low cable pulley, EZ bar or straight bar attachment. Curl up, keeping constant cable tension (unlike dumbbells which lose tension at top). Great pump finisher for biceps. Keep elbows at sides, don't swing.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Biceps</span><span class="ex-muscle-tag">Brachialis</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ex-wrapper">
+            <div class="exercise-item" onclick="toggleEx(this)">
+              <div class="ex-icon">🪢</div>
+              <div class="ex-info">
+                <div class="ex-name">Rope Pushdown</div>
+                <div class="ex-sets">2 × 12 reps</div>
+                <div class="ex-tap-hint">Tap to see how →</div>
+              </div>
+              <div class="ex-chevron">▼</div>
+            </div>
+            <div class="ex-expand">
+              <div class="ex-expand-inner">
+                <img src="Day 5/Rope Pushdown.jpg" alt="Rope Pushdown" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+                <div class="ex-expand-info">
+                  <div class="ex-expand-title">Rope Pushdown</div>
+                  <div class="ex-expand-desc">Final tricep pump to finish the week. Same technique — elbows pinned, flare rope hands at bottom. 2 sets only — enough for pump without overloading the triceps that already worked Day 1.</div>
+                  <div class="ex-expand-muscles"><span class="ex-muscle-tag">Triceps</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="image-panel">
+          <img src="Day 5/Upper Body Workout.jpg" alt="Upper Body Workout" onerror="this.onerror=null;var pngPath=this.src.replace('.jpg','.png');if(!this.src.endsWith('.png')){this.src=pngPath;return;}this.style.background='linear-gradient(135deg,#1a0800,#0f0f0f)';this.style.minHeight='180px';this.removeAttribute('src');" />
+          <div class="image-overlay"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROGRESSION -->
+<section id="rules">
+  <div class="section-label">Progressive Overload</div>
+  <div class="section-title">Progression Rule</div>
+
+  <div class="progression-banner reveal">
+    <div class="prog-left">
+      <div class="prog-title">Weekly Overload</div>
+      <div class="prog-desc">
+        हर हफ्ते weight या reps में small increase करो।<br>
+        Gradual overload = no burnout, consistent gains.<br>
+        <strong style="color:#aaa;">Focus: slow progress beats fast crashes.</strong>
+      </div>
+    </div>
+    <div class="prog-right">
+      <div class="prog-pill">
+        <div class="prog-val">+2.5kg</div>
+        <div class="prog-key">Weight Increase</div>
+      </div>
+      <div class="prog-pill" style="background:rgba(255,77,0,0.1); border-color:rgba(255,77,0,0.25);">
+        <div class="prog-val" style="color:var(--fire);">+2 reps</div>
+        <div class="prog-key">Per Set Alt.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 3rem;">
+    <div class="section-label" style="margin-bottom:1.5rem;">Execution Rules</div>
+    <div class="tips-grid reveal">
+      <div class="tip-card">
+        <div class="tip-icon">⏱️</div>
+        <div>
+          <div class="tip-title">Time Limit</div>
+          <div class="tip-text">60–75 min max per session. Energy conserve karo for your job. Quality over quantity.</div>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">😤</div>
+        <div>
+          <div class="tip-title">Rest Periods</div>
+          <div class="tip-text">60–90 seconds between sets. Enough recovery to maintain form, short enough to keep intensity.</div>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🎯</div>
+        <div>
+          <div class="tip-title">Form First</div>
+          <div class="tip-text">Perfect form → injury avoid. Machine-based training reduces CNS fatigue for working professionals.</div>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🚫</div>
+        <div>
+          <div class="tip-title">No Daily Failure</div>
+          <div class="tip-text">Avoid failure sets every session. Heavy legs only once a week. Smart training = better recovery.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;">
+    <div class="coach-note reveal">
+      <strong>🔥 Coach Ailaan Note:</strong> Tumhari job already active hai → overtraining mat karo.<br>
+      Smart training = better recovery = faster growth. Machine-based focus means less central nervous system fatigue, so you're still productive at work. <strong>Consistency + Recovery = Growth. Overtraining = burnout ❌</strong>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="section-label">What to Expect</div>
+  <div class="section-title">Result Expectations</div>
+
+  <div class="results-grid reveal">
+    <div class="result-card">
+      <div class="result-icon">💪</div>
+      <div class="result-val">3–5 kg</div>
+      <div class="result-desc">Lean muscle gain in 3–4 months of consistent training</div>
+    </div>
+    <div class="result-card">
+      <div class="result-icon">🏋️</div>
+      <div class="result-val">Visible</div>
+      <div class="result-desc">Chest + shoulder growth — noticeable physique change</div>
+    </div>
+    <div class="result-card">
+      <div class="result-icon">📈</div>
+      <div class="result-val">++Strength</div>
+      <div class="result-desc">Progressive strength increase without job-related fatigue</div>
+    </div>
+    <div class="result-card">
+      <div class="result-icon">⚡</div>
+      <div class="result-val">No Crash</div>
+      <div class="result-desc">Energy maintained for long hospital shifts — smart load management</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER QUOTE -->
+<div class="footer-quote">
+  <div class="quote-text">
+    CONSISTENCY<br>+ RECOVERY<br>= <span>GROWTH</span>
+  </div>
+  <div class="quote-coach">
+    Program by <strong>Coach Ailaan</strong> &nbsp;•&nbsp; For Akshay &nbsp;•&nbsp; 2025
+  </div>
+</div>
+
+<script>
+  // ── TOGGLE EXERCISE EXPAND ──
+  function toggleEx(itemEl) {
+    const wrapper = itemEl.closest('.ex-wrapper');
+    const expand = wrapper.querySelector('.ex-expand');
+    const isOpen = expand.classList.contains('open');
+
+    // Close all other open ones in same list
+    const list = wrapper.closest('.exercise-list');
+    list.querySelectorAll('.ex-expand.open').forEach(el => {
+      el.classList.remove('open');
+      el.closest('.ex-wrapper').querySelector('.exercise-item').classList.remove('open');
+    });
+
+    if (!isOpen) {
+      expand.classList.add('open');
+      itemEl.classList.add('open');
+      // Scroll into view smoothly
+      setTimeout(() => {
+        expand.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  }
+
+  // ── SCROLL REVEAL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        const items = e.target.querySelectorAll('.exercise-item, .day-card, .tip-card, .result-card, .prog-pill');
+        items.forEach((item, i) => {
+          item.style.transitionDelay = `${i * 60}ms`;
+          item.style.opacity = '0';
+          item.style.transform = 'translateY(14px)';
+          item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          setTimeout(() => {
+            item.style.opacity = '';
+            item.style.transform = '';
+          }, i * 60 + 100);
+        });
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
